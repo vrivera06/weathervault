@@ -1,0 +1,32 @@
+# Core Django
+Django==6.0.6
+djangorestframework==3.17.1
+django-cors-headers==4.9.0
+
+# Database
+psycopg2-binary==2.9.12
+
+# Environment
+python-dotenv==1.2.2
+
+# Gemini AI
+google-generativeai==0.8.6
+google-ai-generativelanguage==0.6.15
+google-api-core==2.31.0
+google-api-python-client==2.197.0
+google-auth==2.54.0
+google-auth-httplib2==0.4.0
+proto-plus==1.28.0
+protobuf==5.29.6
+grpcio==1.81.1
+grpcio-status==1.71.2
+
+# HTTP / validation (Gemini transitive deps)
+requests==2.34.2
+urllib3==2.7.0
+certifi==2026.5.20
+pydantic==2.13.4
+pydantic-core==2.46.4
+annotated-types==0.7.0
+typing-extensions==4.15.0
+typing-inspection==0.4.2
