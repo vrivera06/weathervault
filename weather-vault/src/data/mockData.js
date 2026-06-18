@@ -9,12 +9,23 @@ function generateDailyData(startDate, days, baseTempF, baseHumidity) {
     const seasonalTemp = Math.sin((i / days) * Math.PI) * 8;
     const noise = (Math.random() - 0.5) * 6;
     const humidNoise = (Math.random() - 0.5) * 12;
+    const windVal = Math.round((8 + Math.random() * 12) * 10) / 10;
+    const tempVal = Math.round((baseTempF + seasonalTemp + noise) * 10) / 10;
+    const rainVal = Math.round(Math.max(0, (Math.random() - 0.7) * 0.5) * 100) / 100;
     data.push({
       date: dateStr,
-      tempF: Math.round((baseTempF + seasonalTemp + noise) * 10) / 10,
-      humidity: Math.min(95, Math.max(30, Math.round(baseHumidity + humidNoise))),
-      windMph: Math.round((8 + Math.random() * 12) * 10) / 10,
+      // NOAA field names (used by Dashboard, CorrelativeGraphs)
+      air_temp: tempVal,
+      temp_f: tempVal,
+      wind_speed: windVal,
+      max_wind_speed: Math.round((windVal + Math.random() * 5) * 10) / 10,
+      wind_dir: Math.round(Math.random() * 360),
+      rain: rainVal,
       condition: pickCondition(baseHumidity + humidNoise),
+      // Legacy aliases kept for any remaining references
+      tempF: tempVal,
+      windMph: windVal,
+      humidity: Math.min(95, Math.max(30, Math.round(baseHumidity + humidNoise))),
     });
   }
   return data;
@@ -35,18 +46,22 @@ export const dailyData2025 = generateDailyData('2025-06-01', 45, 74, 58);
 // 2026 daily data (current)
 export const dailyData2026 = generateDailyData('2026-06-01', 15, 76, 61);
 
-// Current conditions (latest entry)
+// Current conditions (latest entry) — uses NOAA field names to match backend schema
 export const currentWeather = {
+  station: 'JFK International Airport',
+  date: '2026-06-15',
+  air_temp: 78.4,
+  temp_f: 78.4,
+  rain: 0.0,
+  wind_speed: 11.2,
+  max_wind_speed: 15.8,
+  wind_dir: 220,
+  condition: 'Partly Cloudy',
+  // legacy aliases
   city: CITY,
   tempF: 78.4,
-  feelsLikeF: 80.1,
-  humidity: 63,
   windMph: 11.2,
-  condition: 'Partly Cloudy',
-  uvIndex: 6,
-  pressure: 1013,
-  visibility: 10,
-  updatedAt: '2026-06-15 11:06',
+  humidity: 63,
 };
 
 // Weekly aggregates for Past Models table
@@ -73,10 +88,14 @@ export const monthlyHistory = [
 // Correlative: same date window, 2025 vs 2026
 export const correlativeData = dailyData2026.map((d26, i) => ({
   date: d26.date,
-  temp2026: d26.tempF,
-  humidity2026: d26.humidity,
-  temp2025: dailyData2025[i] ? dailyData2025[i].tempF : null,
-  humidity2025: dailyData2025[i] ? dailyData2025[i].humidity : null,
+  temp2026: d26.air_temp,
+  temp_current_year: d26.air_temp,
+  rain2026: d26.rain,
+  rain_current_year: d26.rain,
+  temp2025: dailyData2025[i] ? dailyData2025[i].air_temp : null,
+  temp_prev_year: dailyData2025[i] ? dailyData2025[i].air_temp : null,
+  rain2025: dailyData2025[i] ? dailyData2025[i].rain : null,
+  rain_prev_year: dailyData2025[i] ? dailyData2025[i].rain : null,
 }));
 
 // Sample chatbot conversation
